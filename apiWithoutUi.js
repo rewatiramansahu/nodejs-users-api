@@ -11,6 +11,7 @@ async function main(){
 }
 
 const collection = client.db('node_aug').collection('dashboard');
+const collectionContact = client.db('gautamconstruction').collection('contacts');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const port = process.env.PORT || 3001;
@@ -146,6 +147,36 @@ app.put('/activateUser',async(req,res) => {
 
     res.send(`User Activate`)
 })
+
+
+
+//add contact
+app.post('/addContact',async(req,res)=> {
+    let data = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        msg: req.body.msg,
+        status: 1,
+        isActive:true
+    }
+    await collectionContact.insertOne(data);
+    res.send('Thank you for contacting to us, we will get contact you soon...')
+})
+
+
+//get contacts
+app.get('/contacts',async(req,res) => {
+    let output = [];
+    let query = {};
+    const cursor = collectionContact.find(query);
+    for await (const data of cursor){
+        output.push(data)
+    }
+    cursor.closed;
+    res.send(output)
+})
+
 
 
 app.listen(port,() => {
